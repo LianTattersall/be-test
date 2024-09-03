@@ -1,17 +1,16 @@
 const express = require("express");
+const apiRouter = require("./routers/apiRouter");
 
 const app = express();
 
-const firebase = process.env.FIREBASE;
+app.use(express.json());
 
-app.get("/api", (req, res) => {
-  res.status(200).send({ hello: "world" });
+app.use("/api", apiRouter);
+
+app.use((err, request, response, next) => {
+  if (err.status) {
+    response.status(err.status).send(err);
+  }
 });
 
-app.get("/api/firebase", (req, res) => {
-  res.status(200).send(firebase);
-});
-
-app.listen(9000, () => {
-  console.log("listening on 9000");
-});
+module.exports = app;

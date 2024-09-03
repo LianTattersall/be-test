@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user-0",
+    "2-9-2024": {
+      "breakfast": "recipie-3",
+      "lunch": "recipie-4",
+      "dinner": "recipie-2"
+    },
+    "3-9-2024": {
+      "breakfast": "recipie-0"
+    }
+  },
+  { "id": "user-1" },
+  { "id": "user-2" },
+  { "id": "user-3" }
+]
