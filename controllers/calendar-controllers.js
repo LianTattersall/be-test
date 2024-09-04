@@ -26,7 +26,9 @@ exports.postMealForUserByDate = (request, response, next) => {
 exports.patchMealForUserByDate = (request, response, next) => {
   const { user_id, date } = request.params;
   const patchInfo = request.body;
-  updateMealForUserByDate(user_id, date, patchInfo).then((meals) => {
-    response.status(200).send({ meals });
-  });
+  updateMealForUserByDate(user_id, date, patchInfo)
+    .then((meals) => {
+      response.status(200).send({ meals });
+    })
+    .catch(next);
 };

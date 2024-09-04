@@ -26,22 +26,15 @@ exports.fetchMealsForUserByDate = (user_id, date) => {
 
 exports.addMealForUserByDate = (user_id, date, postInfo) => {
   const docRef = doc(calendarRef, user_id);
-  const postInfoKeys = Object.keys(postInfo);
-  const validDataTypes = postInfoKeys.every(
-    (key) => typeof postInfo[key] === "string"
-  );
-  if (!validDataTypes) {
+
+  if (!validDataTypes(postInfo)) {
     return Promise.reject({
       status: 400,
       message: "400 - Invalid data type for meal",
     });
   }
 
-  const validKeys = ["breakfast", "lunch", "dinner", "extras"];
-  const validKeysOnBody = postInfoKeys.every(
-    (key) => validKeys.indexOf(key) >= 0
-  );
-  if (!validKeysOnBody) {
+  if (!validKeys(postInfo)) {
     return Promise.reject({
       status: 400,
       message: "400 - invalid field in request body",
@@ -71,6 +64,20 @@ exports.addMealForUserByDate = (user_id, date, postInfo) => {
 
 exports.updateMealForUserByDate = (user_id, date, patchInfo) => {
   const docRef = doc(calendarRef, user_id);
+  if (!validDataTypes(patchInfo)) {
+    return Promise.reject({
+      status: 400,
+      message: "400 - Invalid data type for meal",
+    });
+  }
+
+  if (!validKeys(patchInfo)) {
+    return Promise.reject({
+      status: 400,
+      message: "400 - invalid field in request body",
+    });
+  }
+
   return this.fetchMealsForUserByDate(user_id, date)
     .then((mealData) => {
       const newMealData = { ...mealData };
@@ -85,3 +92,16 @@ exports.updateMealForUserByDate = (user_id, date, patchInfo) => {
       return patchInfo;
     });
 };
+
+function validDataTypes(info) {
+  const infoKeys = Object.keys(info);
+  const validDataTypes = infoKeys.every((key) => typeof info[key] === "string");
+  return validDataTypes;
+}
+
+function validKeys(info) {
+  const infoKeys = Object.keys(info);
+  const validKeys = ["breakfast", "lunch", "dinner", "extras"];
+  const validKeysOnBody = infoKeys.every((key) => validKeys.indexOf(key) >= 0);
+  return validKeysOnBody;
+}

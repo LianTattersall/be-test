@@ -1,10 +1,38 @@
 {
-  "GET /api": { "desciption": "responds with a description of all endpoints" },
+  "GET /api": { "description": "responds with a description of all endpoints" },
   "GET /api/users/:user_id/calendar/:date": {
     "description": "responds with an object containing meal_ids for that date to that user",
     "notes": ":date parameter is of the form 4-3-2002 for example. No leading zeros and is of the for date-month-year",
     "exampleResponse": {
       "meals": { "breakfast": "f4HJ8T", "dinner": "HG56EW" }
+    }
+  },
+  "POST /api/users/:user_id/calendar/:date": {
+    "description": "posts meals info to a new date if the date already exists it will overwrite what is already there",
+    "requestFormat": {
+      "breakfast": "recipie_id e.g. 123HGTY6",
+      "lunch": "4FGTJY"
+    },
+    "notes": "can have breakfast lunch dinner and extras as keys, all keys are optional",
+    "exampleResponse": {
+      "meals": {
+        "breakfast": "recipie_id e.g. 123HGTY6",
+        "lunch": "4FGTJY"
+      }
+    }
+  },
+  "PATCH /api/users/:user_id/calendar/:date": {
+    "description": "patches meals info to an existing date if the date already exists it will not overwrite what is already there",
+    "requestFormat": {
+      "breakfast": "recipie_id e.g. 123HGTY6",
+      "lunch": "4FGTJY"
+    },
+    "notes": "can have breakfast lunch dinner and extras as keys, all keys are optional",
+    "exampleResponse": {
+      "meals": {
+        "breakfast": "recipie_id e.g. 123HGTY6",
+        "lunch": "4FGTJY"
+      }
     }
   }
 }

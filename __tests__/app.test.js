@@ -129,5 +129,74 @@ describe("/api/users/:user_id/calendar/:date", () => {
           expect(meals).toEqual({ dinner: "recipie-5" });
         });
     });
+    test("400: responds with an error if the post info has incorrect data types", () => {
+      return request(app)
+        .patch("/api/users/user-0/calendar/2-9-2024")
+        .send({ breakfast: ["noodles"] })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type for meal");
+        });
+    });
+    test("400: responds with an error when the fields do not have the correct name", () => {
+      return request(app)
+        .patch("/api/users/user-1/calendar/2-9-2024")
+        .send({ brekkie: "recipie-2" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - invalid field in request body");
+        });
+    });
+    test("404: responds with an error when the user id does not exist", () => {
+      return request(app)
+        .patch("/api/users/user-50/calendar/2-9-2024")
+        .send({ breakfast: "recipie-0" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400: responds with an error when date parameter is not the correct format", () => {
+      return request(app)
+        .patch("/api/users/user-1/calendar/mon-3-2024")
+        .send({ lunch: "recipie-3" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+    test("400: responds with an error when date parameter is not the correct format", () => {
+      return request(app)
+        .post("/api/users/user-1/calendar/123-3")
+        .send({ dinner: "recipie-3" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+  });
+});
+
+describe("/api/users", () => {
+  describe("POST", () => {
+    test("201: responds with the data posted upon successful post", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          user_id: "AB56HY",
+          display_name: "Lian Wan",
+          avatar_url: "https:mypic",
+        })
+        .expect(201)
+        .then(({ body: { user } }) => {
+          expect(user).toEqual({
+            user_id: "AB56HY",
+            display_name: "Lian Wan",
+            avatar_url: "https:mypic",
+            recipies: [],
+            favourites: [],
+          });
+        });
+    });
   });
 });
