@@ -198,5 +198,53 @@ describe("/api/users", () => {
           });
         });
     });
+    test("400: responds with an error when the data types are incorrect", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          user_id: "123",
+          display_name: ["Lian", "Wan"],
+          avatar_url: "lkjfh",
+        })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400: responds with an error when the keys are not correct", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          user_id: "123",
+          display_nameeee: "Hanna",
+          avatar_url: "adskgh",
+        })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid fields on request body");
+        });
+    });
+    test("400: responds with an error when there are missing or additional fields", () => {
+      return request(app)
+        .post("/api/users")
+        .send({ user_id: "123" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Incorrect format for request body");
+        });
+    });
+    test("400 - responds with an error when a user already exists  with the same id", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          user_id: "user-0",
+          display_name: "imposter",
+          avatar_url: "no-img",
+        })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - User already exists");
+        });
+    });
   });
 });
