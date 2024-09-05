@@ -49,5 +49,9 @@
         "avatar_url": "https:image.com"
       }
     }
+  },
+  "POST /api/users/:user_id/calendar": {
+    "description": "posts a user to the calendar database with no meals",
+    "exampleResponse": { "user_id": "123GF" }
   }
 }
