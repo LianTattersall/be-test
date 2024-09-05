@@ -2,6 +2,7 @@ const {
   fetchMealsForUserByDate,
   addMealForUserByDate,
   updateMealForUserByDate,
+  addUserToCalendar,
 } = require("../models/calendar-models");
 
 exports.getMealsForUserByDate = (request, response, next) => {
@@ -29,6 +30,15 @@ exports.patchMealForUserByDate = (request, response, next) => {
   updateMealForUserByDate(user_id, date, patchInfo)
     .then((meals) => {
       response.status(200).send({ meals });
+    })
+    .catch(next);
+};
+
+exports.postUserToCalendar = (request, response, next) => {
+  const { user_id } = request.params;
+  addUserToCalendar(user_id)
+    .then((user_id) => {
+      response.status(201).send({ user_id });
     })
     .catch(next);
 };

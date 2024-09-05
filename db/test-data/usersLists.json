@@ -1,6 +1,0 @@
-[
-  { "id": "user-0", "lists": ["list-3", "list-0"] },
-  { "id": "user-1", "lists": ["list-1", "list-2"] },
-  { "id": "user-2", "lists": ["list-3", "list-0"] },
-  { "id": "user-3", "lists": ["list-3", "list-1"] }
-]

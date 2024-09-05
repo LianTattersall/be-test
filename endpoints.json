@@ -34,5 +34,20 @@
         "lunch": "4FGTJY"
       }
     }
+  },
+  "POST /api/users": {
+    "description": "posts a user to the database with an empty lists favourites and recipies arrays",
+    "requestFormat": {
+      "user_id": "123",
+      "display_name": "Maggie",
+      "avatar_url": "https:image.com"
+    },
+    "exampleResponse": {
+      "user": {
+        "user_id": "123",
+        "display_name": "Maggie",
+        "avatar_url": "https:image.com"
+      }
+    }
   }
 }

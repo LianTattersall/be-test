@@ -195,6 +195,7 @@ describe("/api/users", () => {
             avatar_url: "https:mypic",
             recipies: [],
             favourites: [],
+            lists: [],
           });
         });
     });
@@ -244,6 +245,27 @@ describe("/api/users", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - User already exists");
+        });
+    });
+  });
+});
+
+describe("/api/users/:user_id/calendar", () => {
+  describe("POST", () => {
+    test("201: responds with the user_id that was posted to the calendar", () => {
+      return request(app)
+        .post("/api/users/user-10/calendar")
+        .expect(201)
+        .then(({ body: { user_id } }) => {
+          expect(user_id).toBe("user-10");
+        });
+    });
+    test("400: responds with an error when the user_id is already posted to the calendar", () => {
+      return request(app)
+        .post("/api/users/user-0/calendar")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - User already has a calendar");
         });
     });
   });

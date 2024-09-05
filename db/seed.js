@@ -7,7 +7,6 @@ const {
 } = require("firebase/firestore");
 const db = require("./connection.js");
 const userData = require("./test-data/users.json");
-const usersListsData = require("./test-data/usersLists.json");
 const recipiesData = require("./test-data/recipies.json");
 const listsData = require("./test-data/lists.json");
 const calendarData = require("./test-data/calendar.json");
@@ -16,12 +15,6 @@ exports.seed = () => {
   return clearCollection(usersRef)
     .then(() => {
       return populateCollection(usersRef, userData);
-    })
-    .then(() => {
-      return clearCollection(usersListsRef);
-    })
-    .then(() => {
-      return populateCollection(usersListsRef, usersListsData);
     })
     .then(() => {
       return clearCollection(recipiesRef);
@@ -66,7 +59,6 @@ function clearCollection(colRef) {
 }
 
 const usersRef = collection(db, "users");
-const usersListsRef = collection(db, "usersLists");
 const recipiesRef = collection(db, "recipies");
 const listsRef = collection(db, "lists");
 const calendarRef = collection(db, "calendar");

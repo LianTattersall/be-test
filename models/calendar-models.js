@@ -93,6 +93,23 @@ exports.updateMealForUserByDate = (user_id, date, patchInfo) => {
     });
 };
 
+exports.addUserToCalendar = (user_id) => {
+  const docRef = doc(calendarRef, user_id);
+  return getDoc(docRef)
+    .then((snapShot) => {
+      if (snapShot.exists()) {
+        return Promise.reject({
+          status: 400,
+          message: "400 - User already has a calendar",
+        });
+      }
+      return setDoc(docRef, {});
+    })
+    .then(() => {
+      return user_id;
+    });
+};
+
 function validDataTypes(info) {
   const infoKeys = Object.keys(info);
   const validDataTypes = infoKeys.every((key) => typeof info[key] === "string");

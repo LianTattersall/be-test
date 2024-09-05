@@ -34,6 +34,7 @@ exports.addUser = (postInfo) => {
     avatar_url,
     favourites: [],
     recipies: [],
+    lists: [],
   };
 
   return getDoc(docRef)
@@ -53,6 +54,7 @@ exports.addUser = (postInfo) => {
         avatar_url,
         recipies: [],
         favourites: [],
+        lists: [],
       };
     });
 };
