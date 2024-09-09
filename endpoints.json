@@ -1,37 +1,60 @@
 {
   "GET /api": { "description": "responds with a description of all endpoints" },
   "GET /api/users/:user_id/calendar/:date": {
-    "description": "responds with an object containing meal_ids for that date to that user",
-    "notes": ":date parameter is of the form 4-3-2002 for example. No leading zeros and is of the for date-month-year",
+    "description": "responds with an object containing meal info for that date to that user",
+    "notes": ":date parameter is of the form 4-3-2002 for example. No leading zeros and is of the for date-month-year. Months are indexed at 0!! (applies for post and patch)",
     "exampleResponse": {
-      "meals": { "breakfast": "f4HJ8T", "dinner": "HG56EW" }
+      "meals": {
+        "breakfast": {
+          "recipie_id": "123DE4",
+          "recipie_name": "beans on toast",
+          "my_recipie": false
+        },
+        "dinner": {
+          "recipie_id": "12SHE4",
+          "recipie_name": "Paneer Curry",
+          "my_recipie": true
+        }
+      }
     }
   },
   "POST /api/users/:user_id/calendar/:date": {
-    "description": "posts meals info to a new date if the date already exists it will overwrite what is already there",
+    "description": "posts meals info to a date if the meal already exists it will overwrite what is already there",
     "requestFormat": {
-      "breakfast": "recipie_id e.g. 123HGTY6",
-      "lunch": "4FGTJY"
+      "breakfast": {
+        "recipie_id": "12SHE4",
+        "recipie_name": "Paneer Curry",
+        "my_recipie": true
+      }
     },
     "notes": "can have breakfast lunch dinner and extras as keys, all keys are optional",
     "exampleResponse": {
       "meals": {
-        "breakfast": "recipie_id e.g. 123HGTY6",
-        "lunch": "4FGTJY"
+        "breakfast": {
+          "recipie_id": "12SHE4",
+          "recipie_name": "Paneer Curry",
+          "my_recipie": true
+        }
       }
     }
   },
   "PATCH /api/users/:user_id/calendar/:date": {
-    "description": "patches meals info to an existing date if the date already exists it will not overwrite what is already there",
+    "description": "patches meals info to an existing date if the date already exists (i.e has other meals as well) it will not overwrite what is already there",
     "requestFormat": {
-      "breakfast": "recipie_id e.g. 123HGTY6",
-      "lunch": "4FGTJY"
+      "breakfast": {
+        "recipie_id": "12SHE4",
+        "recipie_name": "Paneer Curry",
+        "my_recipie": true
+      }
     },
     "notes": "can have breakfast lunch dinner and extras as keys, all keys are optional",
     "exampleResponse": {
       "meals": {
-        "breakfast": "recipie_id e.g. 123HGTY6",
-        "lunch": "4FGTJY"
+        "breakfast": {
+          "recipie_id": "12SHE4",
+          "recipie_name": "Paneer Curry",
+          "my_recipie": true
+        }
       }
     }
   },
@@ -53,5 +76,9 @@
   "POST /api/users/:user_id/calendar": {
     "description": "posts a user to the calendar database with no meals",
     "exampleResponse": { "user_id": "123GF" }
+  },
+  "DELETE /api/users/:user_id/calendar/:date/:meal": {
+    "description": "deletes a meal at for the specified user date and meal",
+    "exampleResponse": {}
   }
 }

@@ -2,12 +2,28 @@
   {
     "id": "user-0",
     "2-9-2024": {
-      "breakfast": "recipie-3",
-      "lunch": "recipie-4",
-      "dinner": "recipie-2"
+      "breakfast": {
+        "recpie_id": "recipie-3",
+        "recipie_name": "banana on toast",
+        "my_recipie": true
+      },
+      "lunch": {
+        "recpie_id": "recipie-4",
+        "recipie_name": "pot noodles",
+        "my_recipie": false
+      },
+      "dinner": {
+        "recpie_id": "recipie-5",
+        "recipie_name": "lasagne",
+        "my_recipie": false
+      }
     },
     "3-9-2024": {
-      "breakfast": "recipie-0"
+      "breakfast": {
+        "recpie_id": "recipie-3",
+        "recipie_name": "banana on toast",
+        "my_recipie": true
+      }
     }
   },
   { "id": "user-1" },

@@ -25,9 +25,21 @@ describe("/api/users/:user_id/calendar/:date", () => {
         .get("/api/users/user-0/calendar/2-9-2024")
         .expect(200)
         .then(({ body: { meals } }) => {
-          expect(meals.breakfast).toBe("recipie-3");
-          expect(meals.lunch).toBe("recipie-4");
-          expect(meals.dinner).toBe("recipie-2");
+          expect(meals.breakfast).toEqual({
+            recpie_id: "recipie-3",
+            recipie_name: "banana on toast",
+            my_recipie: true,
+          });
+          expect(meals.lunch).toEqual({
+            recpie_id: "recipie-4",
+            recipie_name: "pot noodles",
+            my_recipie: false,
+          });
+          expect(meals.dinner).toEqual({
+            recpie_id: "recipie-5",
+            recipie_name: "lasagne",
+            my_recipie: false,
+          });
         });
     });
     test("200: responds with an empty object when the date does not have any meals", () => {
@@ -65,101 +77,290 @@ describe("/api/users/:user_id/calendar/:date", () => {
   });
   describe("POST", () => {
     test("201: reposonds with the data that was successfully posted", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+        },
+        lunch: {
+          recipie_id: "12345",
+          recipie_name: "cheese on toast with mushroom",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .post("/api/users/user-0/calendar/5-9-2024")
-        .send({ breakfast: "recipie-0", lunch: "recipie-4" })
+        .send(postInfo)
         .expect(201)
         .then(({ body: { meals } }) => {
-          expect(meals).toEqual({ breakfast: "recipie-0", lunch: "recipie-4" });
+          expect(meals).toStrictEqual(postInfo);
         });
     });
     test("400: responds with an error if the post info has incorrect data types", () => {
       return request(app)
         .post("/api/users/user-0/calendar/9-9-2024")
-        .send({ breakfast: ["noodles"] })
+        .send({ breakfast: "noodles" })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Invalid data type for meal");
         });
     });
     test("400: responds with an error when the fields do not have the correct name", () => {
+      const postInfo = {
+        brekkie: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .post("/api/users/user-1/calendar/4-4-2020")
-        .send({ brekkie: "recipie-2" })
+        .send(postInfo)
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - invalid field in request body");
         });
     });
     test("404: responds with an error when the user id does not exist", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .post("/api/users/user-50/calendar/2-2-2020")
-        .send({ breakfast: "recipie-0" })
+        .send(postInfo)
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("404 - User not found");
         });
     });
     test("400: responds with an error when date parameter is not the correct format", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .post("/api/users/user-1/calendar/mon-3-2024")
-        .send({ lunch: "recipie-3" })
+        .send(postInfo)
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Date is not in the correct format");
         });
     });
     test("400: responds with an error when date parameter is not the correct format", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .post("/api/users/user-1/calendar/123-3")
-        .send({ dinner: "recipie-3" })
+        .send(postInfo)
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+    test("400 - responds with an error when inner fields are not valid", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+          ingredients: "food",
+        },
+      };
+      return request(app)
+        .post("/api/users/user-0/calendar/8-8-2024")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - invalid field in request body");
+        });
+    });
+    test("400 - responds with an error when inner data types are invalid", () => {
+      const postInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: "true",
+        },
+      };
+      return request(app)
+        .post("/api/users/user-0/calendar/8-8-2024")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "400 - invalid data type for recipie_id recipie_name or my_recipie"
+          );
         });
     });
   });
   describe("PATCH", () => {
     test("200: responds with the fields modified when successful update has occured", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "12SHE4",
+          recipie_name: "Paneer Curry",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .patch("/api/users/user-0/calendar/2-9-2024")
-        .send({ dinner: "recipie-5" })
+        .send(patchInfo)
         .expect(200)
         .then(({ body: { meals } }) => {
-          expect(meals).toEqual({ dinner: "recipie-5" });
+          expect(meals).toEqual({
+            breakfast: {
+              recipie_id: "12SHE4",
+              recipie_name: "Paneer Curry",
+              my_recipie: true,
+            },
+          });
         });
     });
     test("400: responds with an error if the post info has incorrect data types", () => {
       return request(app)
         .patch("/api/users/user-0/calendar/2-9-2024")
-        .send({ breakfast: ["noodles"] })
+        .send({ breakfast: "noodles" })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Invalid data type for meal");
         });
     });
     test("400: responds with an error when the fields do not have the correct name", () => {
+      const patchInfo = {
+        brekkie: {
+          recipie_id: "12SHE4",
+          recipie_name: "Paneer Curry",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .patch("/api/users/user-1/calendar/2-9-2024")
-        .send({ brekkie: "recipie-2" })
+        .send(patchInfo)
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - invalid field in request body");
         });
     });
     test("404: responds with an error when the user id does not exist", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "12SHE4",
+          recipie_name: "Paneer Curry",
+          my_recipie: true,
+        },
+      };
       return request(app)
         .patch("/api/users/user-50/calendar/2-9-2024")
-        .send({ breakfast: "recipie-0" })
+        .send(patchInfo)
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("404 - User not found");
         });
     });
     test("400: responds with an error when date parameter is not the correct format", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "12SHE4",
+          recipie_name: "Paneer Curry",
+          my_recipie: true,
+        },
+      };
       return request(app)
-        .patch("/api/users/user-1/calendar/mon-3-2024")
-        .send({ lunch: "recipie-3" })
+        .patch("/api/users/user-0/calendar/mon-3-2024")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+    test("400: responds with an error when date parameter is not the correct format", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "12SHE4",
+          recipie_name: "Paneer Curry",
+          my_recipie: true,
+        },
+      };
+      return request(app)
+        .post("/api/users/user-1/calendar/123-3")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+    test("400 - responds with an error when inner fields are not valid", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: true,
+          ingredients: "food",
+        },
+      };
+      return request(app)
+        .patch("/api/users/user-0/calendar/8-8-2024")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - invalid field in request body");
+        });
+    });
+    test("400 - responds with an error when inner data types are invalid", () => {
+      const patchInfo = {
+        breakfast: {
+          recipie_id: "123",
+          recipie_name: "cheese on toast",
+          my_recipie: "true",
+        },
+      };
+      return request(app)
+        .patch("/api/users/user-0/calendar/8-8-2024")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "400 - invalid data type for recipie_id recipie_name or my_recipie"
+          );
+        });
+    });
+  });
+});
+
+describe("/api/users/:user_id/calendar/:date/:meal", () => {
+  describe("DELETE", () => {
+    test("204: response is empty when the meal has successfully been deleted", () => {
+      return request(app)
+        .delete("/api/users/user-0/calendar/2-9-2024/breakfast")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/users/user-10/calendar/2-2-2024/lunch")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when the date is not in the correct format", () => {
+      return request(app)
+        .delete("/api/users/user-1/calendar/mon-2-2030/lunch")
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Date is not in the correct format");
@@ -167,11 +368,26 @@ describe("/api/users/:user_id/calendar/:date", () => {
     });
     test("400: responds with an error when date parameter is not the correct format", () => {
       return request(app)
-        .post("/api/users/user-1/calendar/123-3")
-        .send({ dinner: "recipie-3" })
+        .delete("/api/users/user-1/calendar/123-3/dinner")
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Date is not in the correct format");
+        });
+    });
+    test("404 - resopnds with an error when the date does not exist", () => {
+      return request(app)
+        .delete("/api/users/user-1/calendar/1-3-2025/dinner")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - No meals for this date");
+        });
+    });
+    test("404 - resopnds with an error when meal parameter is invalid", () => {
+      return request(app)
+        .delete("/api/users/user-0/calendar/2-9-2024/brunch")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid meal parameter");
         });
     });
   });
