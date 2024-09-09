@@ -34,9 +34,10 @@ exports.addUser = (postInfo) => {
     });
   }
 
-  const { user_id, display_name, avatar_url } = postInfo;
+  const { user_id, display_name, avatar_url, email } = postInfo;
   const docRef = doc(usersRef, user_id);
   const userDetalsToPost = {
+    email,
     display_name,
     avatar_url,
     favourites: [],
