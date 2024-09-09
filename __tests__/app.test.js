@@ -2,6 +2,7 @@ const { seed } = require("../db/seed");
 const request = require("supertest");
 const app = require("../app");
 const endpointsObj = require("../endpoints.json");
+const { list } = require("firebase/storage");
 
 beforeEach(() => {
   return seed();
@@ -399,6 +400,7 @@ describe("/api/users", () => {
       return request(app)
         .post("/api/users")
         .send({
+          email: "lianwan345@gmail.com",
           user_id: "AB56HY",
           display_name: "Lian Wan",
           avatar_url: "https:mypic",
@@ -419,6 +421,7 @@ describe("/api/users", () => {
       return request(app)
         .post("/api/users")
         .send({
+          email: "example@email.com",
           user_id: "123",
           display_name: ["Lian", "Wan"],
           avatar_url: "lkjfh",
@@ -432,6 +435,7 @@ describe("/api/users", () => {
       return request(app)
         .post("/api/users")
         .send({
+          email: "example@email.com",
           user_id: "123",
           display_nameeee: "Hanna",
           avatar_url: "adskgh",
@@ -454,6 +458,7 @@ describe("/api/users", () => {
       return request(app)
         .post("/api/users")
         .send({
+          email: "example@email.com",
           user_id: "user-0",
           display_name: "imposter",
           avatar_url: "no-img",
@@ -461,6 +466,25 @@ describe("/api/users", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - User already exists");
+        });
+    });
+  });
+  describe("GET", () => {
+    test("200 - responds with all users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              user_id: expect.any(String),
+              display_name: expect.any(String),
+              favourites: expect.any(Object),
+              recipies: expect.any(Object),
+              lists: expect.any(Object),
+            });
+          });
         });
     });
   });
@@ -486,3 +510,79 @@ describe("/api/users/:user_id/calendar", () => {
     });
   });
 });
+
+describe("/api/users/:user_id/lists", () => {
+  describe("GET", () => {
+    test("200 - responds with all list info (id, name)", () => {
+      return request(app)
+        .get("/api/users/user-0/lists")
+        .expect(200)
+        .then(({ body: { lists } }) => {
+          expect(lists[0]).toEqual({
+            list_id: "list-3",
+            list_name: "Housesahre flat 2",
+          });
+          expect(lists[1]).toEqual({
+            list_id: "list-0",
+            list_name: "Family shopping",
+          });
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .get("/api/users/user-1000/lists")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("200 - responds with an empty array when the user has no lists", () => {
+      return request(app)
+        .get("/api/users/user-3/lists")
+        .expect(200)
+        .then(({ body: { lists } }) => {
+          expect(lists).toEqual([]);
+        });
+    });
+  });
+  describe("POST", () => {
+    test("201 - responds with the list_id and list_name that was posted to the user", () => {
+      return request(app)
+        .post("/api/users/user-0/lists")
+        .send({ list_name: "Lians List", list_id: "list-4" })
+        .expect(201)
+        .then(({ body: { list } }) => {
+          expect(list).toEqual({ list_name: "Lians List", list_id: "list-4" });
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .post("/api/users/user-10000/lists")
+        .send({ list_id: "NBhgg456W", list_name: "List for user 10000" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when the data types are invalid", () => {
+      return request(app)
+        .post("/api/users/user-0/lists")
+        .send({ list_id: 2, list_name: true })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - respond with an error when the keys are invalid", () => {
+      return request(app)
+        .post("/api/users/user-0/lists")
+        .send({ list: "my list", list_id: "123", list_name: "list" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid fields on request body");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id", () => {});

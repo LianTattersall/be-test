@@ -1,12 +1,19 @@
-const { collection, doc, setDoc, getDoc } = require("firebase/firestore");
+const {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+} = require("firebase/firestore");
 const db = require("../db/connection");
+const { default: MiniSearch } = require("minisearch");
 
 const usersRef = collection(db, "users");
 
 exports.addUser = (postInfo) => {
   const postKeys = Object.keys(postInfo);
 
-  if (postKeys.length !== 3) {
+  if (postKeys.length !== 4) {
     return Promise.reject({
       status: 400,
       message: "400 - Incorrect format for request body",
@@ -18,7 +25,7 @@ exports.addUser = (postInfo) => {
     return Promise.reject({ status: 400, message: "400 - Invalid data type" });
   }
 
-  const greenList = ["display_name", "avatar_url", "user_id"];
+  const greenList = ["display_name", "avatar_url", "user_id", "email"];
   const validKeys = postKeys.every((key) => greenList.indexOf(key) >= 0);
   if (!validKeys) {
     return Promise.reject({
@@ -57,4 +64,17 @@ exports.addUser = (postInfo) => {
         lists: [],
       };
     });
+};
+
+exports.fetchUsers = (searchTerm) => {
+  return getDocs(usersRef).then((data) => {
+    const users = data.docs.map((document) => {
+      return { ...document.data(), user_id: document.id };
+    });
+
+    if (searchTerm) {
+      const miniSearch = new MiniSearch({ fields: ["display_name"] });
+    }
+    return users;
+  });
 };

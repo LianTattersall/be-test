@@ -2,7 +2,7 @@
   {
     "id": "list-0",
     "list_name": "Family shopping",
-    "people": ["0", "2"],
+    "people": ["user-0", "user-2"],
     "items": ["eggs", "chicken"]
   },
   {
@@ -14,13 +14,13 @@
   {
     "id": "list-2",
     "list_name": "My snacks",
-    "people": ["1"],
+    "people": ["user-1"],
     "items": ["seaweed", "bourbons"]
   },
   {
     "id": "list-3",
     "list_name": "Housesahre flat 2",
-    "people": ["1", "2", "3", "0"],
+    "people": ["user-1", "user-2", "user-3", "user-0"],
     "items": ["pasta", "tomatao sauce"]
   }
 ]

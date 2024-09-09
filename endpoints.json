@@ -80,5 +80,11 @@
   "DELETE /api/users/:user_id/calendar/:date/:meal": {
     "description": "deletes a meal at for the specified user date and meal",
     "exampleResponse": {}
+  },
+  "GET: /api/users/:user_id/lists": {
+    "description": "responds with list objects (containing list_id and list_name) for the lists that the user has",
+    "exampleResponse": {
+      "lists": [{ "list_id": "1234", "list_name": "Shopping" }]
+    }
   }
 }
