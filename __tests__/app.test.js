@@ -2,7 +2,6 @@ const { seed } = require("../db/seed");
 const request = require("supertest");
 const app = require("../app");
 const endpointsObj = require("../endpoints.json");
-const { list } = require("firebase/storage");
 
 beforeEach(() => {
   return seed();
@@ -477,12 +476,27 @@ describe("/api/users", () => {
         .then(({ body: { users } }) => {
           expect(users.length).toBe(4);
           users.forEach((user) => {
-            expect(user).toMatchObject({
+            expect(user).toEqual({
+              email: expect.any(String),
               user_id: expect.any(String),
               display_name: expect.any(String),
-              favourites: expect.any(Object),
-              recipies: expect.any(Object),
-              lists: expect.any(Object),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+    test("200 - responds with a filtered array of users when passed a search term", () => {
+      return request(app)
+        .get("/api/users?searchTerm=hanna")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users.length).toBeLessThan(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              email: expect.any(String),
+              user_id: expect.any(String),
+              display_name: expect.any(String),
+              avatar_url: expect.any(String),
             });
           });
         });
@@ -585,4 +599,319 @@ describe("/api/users/:user_id/lists", () => {
   });
 });
 
-describe("/api/lists/:list_id", () => {});
+describe("/api/users/:user_id/lists/:list_id", () => {
+  describe("DELETE", () => {
+    test("204 - empty response body when the list has successfully been deleted from a users profile", () => {
+      return request(app)
+        .delete("/api/users/user-0/lists/list-3")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/users/user-10002/lists/list-0")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("404 - responds with an error when the user does not have the specified list", () => {
+      return request(app)
+        .delete("/api/users/user-2/lists/list-30")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found on user");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id", () => {
+  describe("GET", () => {
+    test("200 - responds with all the list data for the specified list", () => {
+      return request(app)
+        .get("/api/lists/list-1")
+        .expect(200)
+        .then(({ body: { list } }) => {
+          expect(list).toMatchObject({
+            list_id: expect.any(String),
+            list_name: expect.any(String),
+            items: expect.any(Array),
+            people: expect.any(Array),
+          });
+        });
+    });
+    test("404 - responds with an error when the list does not exist", () => {
+      return request(app)
+        .get("/api/lists/list-909090")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+  });
+  describe("PATCH", () => {
+    test("200 - updates the list_name", () => {
+      return request(app)
+        .patch("/api/lists/list-0")
+        .send({ list_name: "MY Grocery List" })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual({ list_name: "MY Grocery List" });
+        });
+    });
+    test("404 - responds with an error when the list does not exist", () => {
+      return request(app)
+        .patch("/api/lists/list-203040")
+        .send({ list_name: "Shopping!!!!" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+    test("400 - responds with an error when the list_name is not a string", () => {
+      return request(app)
+        .patch("/api/lists/list-1")
+        .send({ list_name: [123] })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when there are too many keys", () => {
+      return request(app)
+        .patch("/api/lists/list-2")
+        .send({ list_name: "hi", list_other_name: "hihi" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid request body");
+        });
+    });
+    test("400 - responds with an error when the key if not list_name", () => {
+      return request(app)
+        .patch("/api/lists/list-2")
+        .send({ list___name: "hihi" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid request body");
+        });
+    });
+  });
+});
+
+describe("/api/lists", () => {
+  describe("POST", () => {
+    test("201 - responds with the list that has just been created", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({ list_name: "Friends shopping", people: ["Lian", "Hanna"] })
+        .expect(201)
+        .then(({ body: { list } }) => {
+          expect(list).toMatchObject({
+            list_id: expect.any(String),
+            list_name: "Friends shopping",
+            people: ["Lian", "Hanna"],
+            items: [],
+          });
+        });
+    });
+    test("400 - responds wth an error when the fields do not have the correct data types", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({ list_name: "Shooping", people: "Lian" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "400 - Invalid data type. 'people' key should be an array"
+          );
+        });
+    });
+    test("400 - responds with an error when the peoples array does not contain all strings", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({ list_name: "Shopping", people: [123] })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "400 - Invalid data type. 'people array should only contain strings"
+          );
+        });
+    });
+    test("400 - responds with an error when list_name is not a string", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({ list_name: { name: "shopping" }, people: ["Lian"] })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "400 - Invalid data type. list_name should be a string"
+          );
+        });
+    });
+    test("400 - responds with an error the keys are incorrect", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({ list_name: "shopping", users: ["Lian"] })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid key on request body");
+        });
+    });
+    test("400 - responds with an error when there are additional keys", () => {
+      return request(app)
+        .post("/api/lists")
+        .send({
+          list_name: "Shopping for me",
+          people: ["Lian"],
+          items: ["pickles"],
+        })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Incorrect format for request body");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id/items", () => {
+  describe("POST", () => {
+    test("200 - responds with the item that was just added", () => {
+      return request(app)
+        .post("/api/lists/list-0/items")
+        .send({ item: "water" })
+        .expect(201)
+        .then(({ body: { item } }) => {
+          expect(item).toBe("water");
+        });
+    });
+    test("404 - responds with an error when the list oes not exist", () => {
+      return request(app)
+        .post("/api/lists/list-2003/items")
+        .send({ item: "food" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+    test("400 - responds with an error when the item is not a string", () => {
+      return request(app)
+        .post("/api/lists/list-0/items")
+        .send({ item: 243 })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - reponds with an error when the kay is incorrect", () => {
+      return request(app)
+        .post("/api/lists/list-0/items")
+        .send({ item_name: 243, item2: "hi" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("204 - responds with an empty body when it has successfully deleted all items from list", () => {
+      return request(app)
+        .delete("/api/lists/list-0/items")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the list_id does not exist", () => {
+      return request(app)
+        .delete("/api/lists/list-2304/items")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id/items/:item_index", () => {
+  describe("DELETE", () => {
+    test("204 - has an empty response body upon successful deletion of the item", () => {
+      return request(app)
+        .delete("/api/lists/list-0/items/0")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the list does not exist", () => {
+      return request(app)
+        .delete("/api/lists/list-20358/items/0")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+    test("404 - responds with an error when item does not exist at the specified index", () => {
+      return request(app)
+        .delete("/api/lists/list-0/items/234")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - Item not found");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id/people", () => {
+  describe.only("POST", () => {
+    test("201 - responds with the successfull posted person", () => {
+      return request(app)
+        .post("/api/lists/list-0/people")
+        .send({ user_id: "user-3", display_name: "HannaBremnerTattersall" })
+        .expect(201)
+        .then(({ body: { user } }) => {
+          expect(user).toEqual({
+            user_id: "user-3",
+            display_name: "HannaBremnerTattersall",
+          });
+        });
+    });
+    test("404 - responds with an error when the list oes not exist", () => {
+      return request(app)
+        .post("/api/lists/list-2003/people")
+        .send({ user_id: "user-3", display_name: "Lian" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+    test("400 - responds with an error when the data type is invalid", () => {
+      return request(app)
+        .post("/api/lists/list-0/people")
+        .send({ user_id: [], display_name: "hi" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the request body format is incorect", () => {
+      return request(app)
+        .post("/api/lists/list-0/people")
+        .send({ display_name: "hi" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+    test("400 - responds with an error when the request body format is incorect", () => {
+      return request(app)
+        .post("/api/lists/list-0/people")
+        .send({ display_name: "hi", idddd: "123" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+});

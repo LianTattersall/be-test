@@ -6,7 +6,7 @@ const {
   getDocs,
 } = require("firebase/firestore");
 const db = require("../db/connection");
-const { default: MiniSearch } = require("minisearch");
+const MiniSearch = require("minisearch");
 
 const usersRef = collection(db, "users");
 
@@ -70,11 +70,30 @@ exports.addUser = (postInfo) => {
 exports.fetchUsers = (searchTerm) => {
   return getDocs(usersRef).then((data) => {
     const users = data.docs.map((document) => {
-      return { ...document.data(), user_id: document.id };
+      return {
+        email: document.data().email,
+        avatar_url: document.data().avatar_url,
+        display_name: document.data().display_name,
+        user_id: document.id,
+      };
     });
 
     if (searchTerm) {
+      const usersToSearch = data.docs.map((document) => {
+        return { ...document.data(), id: document.id };
+      });
       const miniSearch = new MiniSearch({ fields: ["display_name"] });
+      miniSearch.addAll(usersToSearch);
+      const resultsAutoComplete = miniSearch.autoSuggest(searchTerm);
+      let results = [];
+      resultsAutoComplete.forEach(({ suggestion }) => {
+        results.push(...miniSearch.search(suggestion));
+      });
+      results = results.map((user) => user.id);
+      const filteredUsers = users.filter(
+        (user) => results.indexOf(user.user_id) >= 0
+      );
+      return filteredUsers;
     }
     return users;
   });

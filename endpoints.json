@@ -61,16 +61,35 @@
   "POST /api/users": {
     "description": "posts a user to the database with an empty lists favourites and recipies arrays",
     "requestFormat": {
+      "email": "test-user@email.com",
       "user_id": "123",
       "display_name": "Maggie",
       "avatar_url": "https:image.com"
     },
     "exampleResponse": {
       "user": {
+        "email": "test-user@email.com",
         "user_id": "123",
         "display_name": "Maggie",
-        "avatar_url": "https:image.com"
+        "avatar_url": "https:image.com",
+        "recipies": [],
+        "favourites": [],
+        "lists": []
       }
+    }
+  },
+  "GET /api/users": {
+    "description": "returns all display_name, email, avatar_url, user_id for all users if searchTerm queries is included it will filter the users according to it",
+    "queries": ["searchTerm"],
+    "exampleResponse": {
+      "users": [
+        {
+          "display_name": "Hanna",
+          "user_id": "123",
+          "email": "hanna@gmail.com",
+          "avatar_url": "exampleUrL"
+        }
+      ]
     }
   },
   "POST /api/users/:user_id/calendar": {
@@ -86,5 +105,63 @@
     "exampleResponse": {
       "lists": [{ "list_id": "1234", "list_name": "Shopping" }]
     }
+  },
+  "POST /api/users/:user_id/lists": {
+    "description": "post a list to a user",
+    "requestFormat": {
+      "list_id": "1234",
+      "list_name": "Shopping for Birthday Party"
+    },
+    "exampleResponse": {
+      "list": {
+        "list_id": "1234",
+        "list_name": "Shopping for Birthday Party"
+      }
+    }
+  },
+  "DELETE /api/users/:user_id/lists/:list_id": {
+    "description": "removes a list from a users profile",
+    "exampleResponse": "n/a"
+  },
+  "GET /api/lists/:list_id": {
+    "description": "responds with all the list data for the specified list",
+    "exampleResponse": {
+      "list": {
+        "list_id": "123",
+        "list_name": "Shopping",
+        "people": ["Martha"],
+        "list_items": ["cheese"]
+      }
+    }
+  },
+  "POST /api/lists": {
+    "description": "post a new list to the database",
+    "requestFormat": { "list_name": "Shopping", "people": ["Lian"] },
+    "exampleResponse": {
+      "list": {
+        "list_id": "123",
+        "list_name": "Shopping",
+        "people": ["Lian"],
+        "items": []
+      }
+    }
+  },
+  "POST /api/lists/:list_id/items": {
+    "description": "posts and item the the list specified by the list_id parameter",
+    "requestFormat": { "item": "Apples" },
+    "exampleResponse": { "item": "Apples" }
+  },
+  "DELETE /api/lists/:list_id/items": {
+    "description": "deletes all the items from the list specified by the parameter",
+    "exampleResponse": "n/a"
+  },
+  "PATCH/api/lists/:list_id": {
+    "description": "patch the name of a list specified by the parameter",
+    "requestFormat": { "list_name": "New List" },
+    "exampleResponse": { "list_name": "New List" }
+  },
+  "DELETE /api/lists/:list_id/items/:item_index": {
+    "description": "deletes the item at the specified index on the list specified by the parameter",
+    "exampleResponse": "n/a"
   }
 }

@@ -8,6 +8,7 @@ const {
 const {
   getListsByUserId,
   postListByUserId,
+  deleteListFromUser,
 } = require("../controllers/lists-controllers");
 const { postUser, getUsers } = require("../controllers/users-controllers");
 
@@ -30,5 +31,7 @@ usersRouter.delete("/:user_id/calendar/:date/:meal", deleteMealForUserByDate);
 usersRouter.get("/:user_id/lists", getListsByUserId);
 
 usersRouter.post("/:user_id/lists", postListByUserId);
+
+usersRouter.delete("/:user_id/lists/:list_id", deleteListFromUser);
 
 module.exports = usersRouter;
