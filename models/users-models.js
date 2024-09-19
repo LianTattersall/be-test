@@ -93,8 +93,8 @@ exports.fetchUsers = (searchTerm) => {
       const filteredUsers = users.filter(
         (user) => results.indexOf(user.user_id) >= 0
       );
-      return filteredUsers;
+      return filteredUsers.slice(0, 10);
     }
-    return users;
+    return users.slice(0, 10);
   });
 };

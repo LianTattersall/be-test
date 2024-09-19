@@ -163,5 +163,87 @@
   "DELETE /api/lists/:list_id/items/:item_index": {
     "description": "deletes the item at the specified index on the list specified by the parameter",
     "exampleResponse": "n/a"
+  },
+  "POST /api/lists/:list_id/people": {
+    "description": "post a new person to a people array of the specified list",
+    "requestFormat": { "user_id": "123", "display_name": "Bob" },
+    "exampleResponse": { "user": { "user_id": "123", "display_name": "Bob" } }
+  },
+  "GET /api/users/:user_id/recipies": {
+    "description": "retrieve the recipie_name and recipie_id for all the recipies the specified user has",
+    "exampleResponse": {
+      "recipies": [{ "recipie_id": "123", "recipie_name": "Victoria Sponge" }]
+    }
+  },
+  "POST /api/users/:user_id/recipies": {
+    "description": "posts a recipie (recipie_id and recipie_name) to a users profile",
+    "exampleResponse": {
+      "recipie": { "recipie_id": "213", "recipie_name": "Cheese on toast" }
+    }
+  },
+  "GET /api/recipies/:recipie_id": {
+    "description": "responds with all the information for a specified recipie",
+    "exampleResponse": {
+      "recipie": {
+        "recipie_id": "recipie-4",
+        "recipie_name": "Chicken nuggets",
+        "ingredients": [
+          "250g flour",
+          "100g bread crumbs",
+          "1 chicken",
+          "2 eggs"
+        ],
+        "method": "coat chicken in flour egg and bread crumbs and fry",
+        "author": {
+          "user_id": "user-3",
+          "display_name": "HannaBremnerTattersall"
+        },
+        "image_url": "emaple.url"
+      }
+    }
+  },
+  "DELETE /api/recipies/:recipie_id": {
+    "description": "deletes the recipie specified by the parameter",
+    "exampleResponse": "n/a"
+  },
+  "POST /api/recipies": {
+    "description": "post a new recipie to the database",
+    "requestFormat": {
+      "recipie_name": "choc cake",
+      "ingredients": ["100g flour", "2 eggs", "100g butter"],
+      "method": "Combine ingredients then bake",
+      "author": { "user_id": "user-0", "display_name": "LianTattersall" },
+      "image_url": "imgurl"
+    },
+    "exampleResponse": {
+      "recipie": {
+        "recipie_id": "123",
+        "recipie_name": "choc cake",
+        "ingredients": ["100g flour", "2 eggs", "100g butter"],
+        "method": "Combine ingredients then bake",
+        "author": { "user_id": "user-0", "display_name": "LianTattersall" },
+        "image_url": "imgurl"
+      }
+    }
+  },
+  "PATCH /api/recipies/:recipie_id": {
+    "description": "patch a recipie",
+    "requestFormat": {
+      "recipie_name": "choc cake",
+      "ingredients": ["100g flour", "2 eggs", "100g butter"],
+      "method": "Combine ingredients then bake",
+      "author": { "user_id": "user-0", "display_name": "LianTattersall" },
+      "image_url": "imgurl"
+    },
+    "exampleResponse": {
+      "recipie": {
+        "recipie_id": "123",
+        "recipie_name": "choc cake",
+        "ingredients": ["100g flour", "2 eggs", "100g butter"],
+        "method": "Combine ingredients then bake",
+        "author": { "user_id": "user-0", "display_name": "LianTattersall" },
+        "image_url": "imgurl"
+      }
+    }
   }
 }

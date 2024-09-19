@@ -1,3 +1,4 @@
+const { list } = require("firebase/storage");
 const { response } = require("../app");
 const {
   fetchListsByUserId,
@@ -10,6 +11,7 @@ const {
   updateListName,
   removeItemByIndex,
   addUserToList,
+  removeUserFromList,
 } = require("../models/lists-models");
 
 exports.getListsByUserId = (request, response, next) => {
@@ -99,6 +101,15 @@ exports.postUserToList = (request, response, next) => {
   addUserToList(list_id, request.body)
     .then((user) => {
       response.status(201).send({ user });
+    })
+    .catch(next);
+};
+
+exports.deleteUserFromList = (request, response, next) => {
+  const { list_id, user_id } = request.params;
+  removeUserFromList(list_id, user_id)
+    .then(() => {
+      response.status(204).send({});
     })
     .catch(next);
 };

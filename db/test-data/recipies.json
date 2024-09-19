@@ -3,24 +3,32 @@
     "id": "recipie-1",
     "recipie_name": "Crepes",
     "ingredients": ["250g flour", "200ml milk", "50g butter"],
-    "method": "combine ingredients and fry"
+    "method": "combine ingredients and fry",
+    "author": { "user_id": "user-1", "display_name": "Lian468" },
+    "image_url": "emaple.url"
   },
   {
     "id": "recipie-2",
     "recipie_name": "bubble tea",
     "ingredients": ["100g tapioca", "100ml milk", "10g taro"],
-    "method": "make tea and add tapioca"
+    "method": "make tea and add tapioca",
+    "author": { "user_id": "user-3", "display_name": "HannaBremnerTattersall" },
+    "image_url": "emaple.url"
   },
   {
     "id": "recipie-3",
     "recipie_name": "American Pnacakes",
     "ingredients": ["250g flour", "100ml milk", "50g butter"],
-    "method": "combine ingredients and fry"
+    "method": "combine ingredients and fry",
+    "author": { "user_id": "user-0", "display_name": "LianTattersall" },
+    "image_url": "emaple.url"
   },
   {
     "id": "recipie-4",
     "recipie_name": "Chicken nuggets",
     "ingredients": ["250g flour", "100g bread crumbs", "1 chicken", "2 eggs"],
-    "method": "coat chicken in flour egg and bread crumbs and fry"
+    "method": "coat chicken in flour egg and bread crumbs and fry",
+    "author": { "user_id": "user-3", "display_name": "HannaBremnerTattersall" },
+    "image_url": "emaple.url"
   }
 ]

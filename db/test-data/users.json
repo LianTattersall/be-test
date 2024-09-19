@@ -4,7 +4,9 @@
     "email": "exam3ple@email.com",
     "display_name": "LianTattersall",
     "avatar_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUm0sQ0gEhk4Mm4lmgyv7nyWNMV6tBD7X4tg&s",
-    "recipies": ["recipie-1"],
+    "recipies": [
+      { "recipie_id": "recipie-3", "recipie_name": "American Pnacakes" }
+    ],
     "favourites": [1432, 1234, 4567],
     "lists": [
       { "list_id": "list-3", "list_name": "Housesahre flat 2" },
@@ -16,7 +18,7 @@
     "email": "exam2ple@email.com",
     "display_name": "Lian468",
     "avatar_url": "https://lian-li.com/wp-content/uploads/2023/05/p28-00.jpg",
-    "recipies": ["recipie-3"],
+    "recipies": [{ "recipie_id": "recipie-1", "recipie_name": "crepes" }],
     "favourites": [1234, 4567],
     "lists": [
       { "list_id": "list-1", "list_name": "Food for christmas party" },
@@ -40,7 +42,10 @@
     "email": "exam7ple@email.com",
     "display_name": "HannaBremnerTattersall",
     "avatar_url": "https://i.redd.it/why-are-greyhounds-so-weird-and-so-cute-v0-ch7j73h0vtwa1.jpg?width=3024&format=pjpg&auto=webp&s=f99106f2c20b3479ecf4df7013b6ead3f30da135",
-    "recipies": ["recipie-4", "recipie-2"],
+    "recipies": [
+      { "recipie_id": "recipie-4", "recipie_name": "Chicken nuggets" },
+      { "recipie_id": "recipie-2", "recipie_name": "bubble tea" }
+    ],
     "favourites": [1234],
     "lists": []
   }

@@ -234,3 +234,23 @@ exports.addUserToList = (list_id, postInfo) => {
       return postInfo;
     });
 };
+
+exports.removeUserFromList = (list_id, user_id) => {
+  const docRef = doc(listsRef, list_id);
+  return getDoc(docRef).then((snapShot) => {
+    if (!snapShot.exists()) {
+      return Promise.reject({ status: 404, message: "404 - List not found" });
+    }
+    const data = snapShot.data();
+    if (data.people.every((person) => person.user_id !== user_id)) {
+      return Promise.reject({
+        status: 404,
+        message: "404 - User not found on list",
+      });
+    }
+    const filteredPeople = data.people.filter(
+      (person) => person.user_id !== user_id
+    );
+    return setDoc(docRef, { people: filteredPeople }, { merge: true });
+  });
+};

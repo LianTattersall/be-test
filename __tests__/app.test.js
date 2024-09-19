@@ -864,7 +864,7 @@ describe("/api/lists/:list_id/items/:item_index", () => {
 });
 
 describe("/api/lists/:list_id/people", () => {
-  describe.only("POST", () => {
+  describe("POST", () => {
     test("201 - responds with the successfull posted person", () => {
       return request(app)
         .post("/api/lists/list-0/people")
@@ -908,6 +908,449 @@ describe("/api/lists/:list_id/people", () => {
       return request(app)
         .post("/api/lists/list-0/people")
         .send({ display_name: "hi", idddd: "123" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+});
+
+describe("/api/lists/:list_id/people/:user_id", () => {
+  describe("DELETE", () => {
+    test("204 - responds with an empty body when the person has been removed from the people array from the list", () => {
+      return request(app)
+        .delete("/api/lists/list-0/people/user-0")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the list_id does not exist", () => {
+      return request(app)
+        .delete("/api/lists/list-2350/people/user-0")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - List not found");
+        });
+    });
+    test("404 - responds with an error when the user does not exist on the list", () => {
+      return request(app)
+        .delete("/api/lists/list-0/people/user-1020")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found on list");
+        });
+    });
+  });
+});
+
+describe("/api/users/:user_id/recipies", () => {
+  describe("GET", () => {
+    test("200 - responds with the recipie_id and recipie_name for all the recipies the user has", () => {
+      return request(app)
+        .get("/api/users/user-0/recipies")
+        .expect(200)
+        .then(({ body: { recipies } }) => {
+          expect(recipies[0]).toEqual({
+            recipie_id: "recipie-3",
+            recipie_name: "American Pnacakes",
+          });
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .get("/api/users/user-110/recipies")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+  });
+  describe("POST", () => {
+    test("201 - responds with the successfully posted recipie", () => {
+      return request(app)
+        .post("/api/users/user-0/recipies")
+        .send({ recipie_id: "123", recipie_name: "Chocolate cake" })
+        .expect(201)
+        .then(({ body: { recipie } }) => {
+          expect(recipie).toEqual({
+            recipie_id: "123",
+            recipie_name: "Chocolate cake",
+          });
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .post("/api/users/user-110/recipies")
+        .send({ recipie_id: "123", recipie_name: "Chocolate cake" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when the request body has invalid data types", () => {
+      return request(app)
+        .post("/api/users/user-0/recipies")
+        .send({ recipie_id: [], recipie_name: {} })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the request body does not have the correct keys", () => {
+      return request(app)
+        .post("/api/users/user-0/recipies")
+        .send({ id: "123", name: "Chocolate cake" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+    test("400 - responds with an error when the request body does not have the correct keys", () => {
+      return request(app)
+        .post("/api/users/user-0/recipies")
+        .send({
+          recipie_id: "123",
+        })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+});
+
+describe("/api/users/:user_id/recipies/:recipie_id", () => {
+  describe("DELETE", () => {
+    test("204 - empty response body when the recipie has successfully been deleted from a users profile", () => {
+      return request(app)
+        .delete("/api/users/user-0/recipies/recipie-3")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/users/user-10002/recipies/recipie-0")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("404 - responds with an error when the user does not have the specified recipie", () => {
+      return request(app)
+        .delete("/api/users/user-2/recipies/recipie-30")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - Recipie not found on user");
+        });
+    });
+  });
+});
+
+describe("/api/recipies/:recipie_id", () => {
+  describe("GET", () => {
+    test("200 - responds with all the info from the specified recipie", () => {
+      return request(app)
+        .get("/api/recipies/recipie-4")
+        .expect(200)
+        .then(({ body: { recipie } }) => {
+          expect(recipie).toEqual({
+            recipie_id: "recipie-4",
+            recipie_name: "Chicken nuggets",
+            ingredients: [
+              "250g flour",
+              "100g bread crumbs",
+              "1 chicken",
+              "2 eggs",
+            ],
+            method: "coat chicken in flour egg and bread crumbs and fry",
+            author: {
+              user_id: "user-3",
+              display_name: "HannaBremnerTattersall",
+            },
+            image_url: "emaple.url",
+          });
+        });
+    });
+    test("404 - responds with an error when the recipie does not exist", () => {
+      return request(app)
+        .get("/api/recipies/recipie-1000")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - Recipie not found");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("204 - response body is empty when the recipie has been deleted", () => {
+      return request(app)
+        .delete("/api/recipies/recipie-4")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/recipies/recipie-1235")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - Recipie not found");
+        });
+    });
+  });
+  describe("PATCH", () => {
+    test("201 - responds with the patched recipie", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(200)
+        .then(({ body: { recipie } }) => {
+          expect(recipie).toEqual({
+            ...patchInfo,
+            recipie_id: expect.any(String),
+          });
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const patchInfo = {
+        recipie_name: ["choc cake"],
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: "100g flour",
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", ["2 eggs"], "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: 45 },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for author");
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-2220", display_name: "unknown" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when the request body has an incorrect format", () => {
+      const patchInfo = {
+        veggie: true,
+        recipie_name: "hi",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-2", display_name: "Hanna" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1")
+        .send(patchInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+    test("404 - responds with an error when the recpie does not exist", () => {
+      const patchInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .patch("/api/recipies/recipie-1000")
+        .send(patchInfo)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - Recipie not found");
+        });
+    });
+  });
+});
+
+describe("/recipies", () => {
+  describe("POST", () => {
+    test("201 - responds with the posted recipie", () => {
+      const postInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(201)
+        .then(({ body: { recipie } }) => {
+          expect(recipie).toEqual({
+            ...postInfo,
+            recipie_id: expect.any(String),
+          });
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const postInfo = {
+        recipie_name: ["choc cake"],
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const postInfo = {
+        recipie_name: "choc cake",
+        ingredients: "100g flour",
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const postInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", ["2 eggs"], "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: "LianTattersall" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("400 - responds with an error when the data types are incorrect", () => {
+      const postInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-0", display_name: 45 },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for author");
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      const postInfo = {
+        recipie_name: "choc cake",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-2220", display_name: "unknown" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when the request body has an incorrect format", () => {
+      const postInfo = {
+        veggie: true,
+        recipie_name: "hi",
+        ingredients: ["100g flour", "2 eggs", "100g butter"],
+        method: "Combine ingredients then bake",
+        author: { user_id: "user-2", display_name: "Hanna" },
+        image_url: "imgurl",
+      };
+      return request(app)
+        .post("/api/recipies")
+        .send(postInfo)
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Invalid format for request body");

@@ -10,6 +10,11 @@ const {
   postListByUserId,
   deleteListFromUser,
 } = require("../controllers/lists-controllers");
+const {
+  getRecipiesByUserId,
+  postRecipieToUser,
+  deleteRecipieFromUser,
+} = require("../controllers/recipies-controllers");
 const { postUser, getUsers } = require("../controllers/users-controllers");
 
 const usersRouter = require("express").Router();
@@ -33,5 +38,11 @@ usersRouter.get("/:user_id/lists", getListsByUserId);
 usersRouter.post("/:user_id/lists", postListByUserId);
 
 usersRouter.delete("/:user_id/lists/:list_id", deleteListFromUser);
+
+usersRouter.get("/:user_id/recipies", getRecipiesByUserId);
+
+usersRouter.post("/:user_id/recipies", postRecipieToUser);
+
+usersRouter.delete("/:user_id/recipies/:recipie_id", deleteRecipieFromUser);
 
 module.exports = usersRouter;
