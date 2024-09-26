@@ -101,11 +101,11 @@ exports.addList = (postInfo) => {
     });
   }
 
-  if (!postInfo.people.every((person) => typeof person === "string")) {
+  if (!postInfo.people.every((person) => typeof person === "object")) {
     return Promise.reject({
       status: 400,
       message:
-        "400 - Invalid data type. 'people array should only contain strings",
+        "400 - Invalid data type. 'people array should only contain objects",
     });
   }
 

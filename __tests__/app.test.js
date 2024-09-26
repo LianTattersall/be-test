@@ -706,13 +706,22 @@ describe("/api/lists", () => {
     test("201 - responds with the list that has just been created", () => {
       return request(app)
         .post("/api/lists")
-        .send({ list_name: "Friends shopping", people: ["Lian", "Hanna"] })
+        .send({
+          list_name: "Friends shopping",
+          people: [
+            { display_name: "Lian", user_id: "123" },
+            { display_name: "Hanna", user_id: "1234" },
+          ],
+        })
         .expect(201)
         .then(({ body: { list } }) => {
           expect(list).toMatchObject({
             list_id: expect.any(String),
             list_name: "Friends shopping",
-            people: ["Lian", "Hanna"],
+            people: [
+              { display_name: "Lian", user_id: "123" },
+              { display_name: "Hanna", user_id: "1234" },
+            ],
             items: [],
           });
         });
@@ -728,21 +737,24 @@ describe("/api/lists", () => {
           );
         });
     });
-    test("400 - responds with an error when the peoples array does not contain all strings", () => {
+    test("400 - responds with an error when the peoples array does not contain all objects", () => {
       return request(app)
         .post("/api/lists")
         .send({ list_name: "Shopping", people: [123] })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe(
-            "400 - Invalid data type. 'people array should only contain strings"
+            "400 - Invalid data type. 'people array should only contain objects"
           );
         });
     });
     test("400 - responds with an error when list_name is not a string", () => {
       return request(app)
         .post("/api/lists")
-        .send({ list_name: { name: "shopping" }, people: ["Lian"] })
+        .send({
+          list_name: { name: "shopping" },
+          people: [{ display_name: "Lian", user_id: "123" }],
+        })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe(
