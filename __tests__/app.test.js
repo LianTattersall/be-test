@@ -792,31 +792,31 @@ describe("/api/lists/:list_id/items", () => {
     test("200 - responds with the item that was just added", () => {
       return request(app)
         .post("/api/lists/list-0/items")
-        .send({ item: "water" })
+        .send({ items: ["water"] })
         .expect(201)
-        .then(({ body: { item } }) => {
-          expect(item).toBe("water");
+        .then(({ body: { items } }) => {
+          expect(items).toEqual(["water"]);
         });
     });
     test("404 - responds with an error when the list oes not exist", () => {
       return request(app)
         .post("/api/lists/list-2003/items")
-        .send({ item: "food" })
+        .send({ items: ["food"] })
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("404 - List not found");
         });
     });
-    test("400 - responds with an error when the item is not a string", () => {
+    test("400 - responds with an error when the item is not an array", () => {
       return request(app)
         .post("/api/lists/list-0/items")
-        .send({ item: 243 })
+        .send({ items: 243 })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Invalid data type");
         });
     });
-    test("400 - reponds with an error when the kay is incorrect", () => {
+    test("400 - reponds with an error when the key is incorrect", () => {
       return request(app)
         .post("/api/lists/list-0/items")
         .send({ item_name: 243, item2: "hi" })

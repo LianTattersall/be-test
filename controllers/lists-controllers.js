@@ -62,8 +62,8 @@ exports.postList = (request, response, next) => {
 exports.postListItem = (request, response, next) => {
   const { list_id } = request.params;
   addListItem(list_id, request.body)
-    .then((item) => {
-      response.status(201).send({ item });
+    .then((items) => {
+      response.status(201).send({ items });
     })
     .catch(next);
 };

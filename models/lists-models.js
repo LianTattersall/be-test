@@ -126,15 +126,15 @@ exports.addList = (postInfo) => {
 };
 
 exports.addListItem = (list_id, itemObj) => {
-  const { item } = itemObj;
+  const { items } = itemObj;
   const keys = Object.keys(itemObj);
-  if (keys[0] !== "item" || keys.length !== 1) {
+  if (keys[0] !== "items" || keys.length !== 1) {
     return Promise.reject({
       status: 400,
       message: "400 - Invalid format for request body",
     });
   }
-  if (typeof item !== "string") {
+  if (!Array.isArray(items)) {
     return Promise.reject({ status: 400, message: "400 - Invalid data type" });
   }
 
@@ -145,11 +145,11 @@ exports.addListItem = (list_id, itemObj) => {
         return Promise.reject({ status: 404, message: "404 - List not found" });
       }
       const data = snapShot.data();
-      data.items.push(item);
+      data.items.push(...items);
       return setDoc(docRef, data);
     })
     .then(() => {
-      return item;
+      return items;
     });
 };
 
