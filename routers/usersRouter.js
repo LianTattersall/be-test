@@ -4,6 +4,7 @@ const {
   patchMealForUserByDate,
   postUserToCalendar,
   deleteMealForUserByDate,
+  delteUsersCalendar,
 } = require("../controllers/calendar-controllers");
 const {
   getListsByUserId,
@@ -15,7 +16,12 @@ const {
   postRecipieToUser,
   deleteRecipieFromUser,
 } = require("../controllers/recipies-controllers");
-const { postUser, getUsers } = require("../controllers/users-controllers");
+const {
+  postUser,
+  getUsers,
+  patchUser,
+  deleteUser,
+} = require("../controllers/users-controllers");
 
 const usersRouter = require("express").Router();
 
@@ -44,5 +50,11 @@ usersRouter.get("/:user_id/recipies", getRecipiesByUserId);
 usersRouter.post("/:user_id/recipies", postRecipieToUser);
 
 usersRouter.delete("/:user_id/recipies/:recipie_id", deleteRecipieFromUser);
+
+usersRouter.patch("/:user_id", patchUser);
+
+usersRouter.delete("/:user_id", deleteUser);
+
+usersRouter.delete("/:user_id/calendar", delteUsersCalendar);
 
 module.exports = usersRouter;

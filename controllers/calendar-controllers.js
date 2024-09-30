@@ -4,6 +4,7 @@ const {
   updateMealForUserByDate,
   addUserToCalendar,
   removeMealForUserByDate,
+  removeUsersCalendar,
 } = require("../models/calendar-models");
 
 exports.getMealsForUserByDate = (request, response, next) => {
@@ -47,6 +48,15 @@ exports.postUserToCalendar = (request, response, next) => {
 exports.deleteMealForUserByDate = (request, response, next) => {
   const { user_id, date, meal } = request.params;
   removeMealForUserByDate(user_id, date, meal)
+    .then(() => {
+      response.status(204).send({});
+    })
+    .catch(next);
+};
+
+exports.delteUsersCalendar = (request, response, next) => {
+  const { user_id } = request.params;
+  removeUsersCalendar(user_id)
     .then(() => {
       response.status(204).send({});
     })

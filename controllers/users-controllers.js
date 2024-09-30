@@ -1,4 +1,9 @@
-const { addUser, fetchUsers } = require("../models/users-models");
+const {
+  addUser,
+  fetchUsers,
+  updateUser,
+  removeUser,
+} = require("../models/users-models");
 
 exports.postUser = (request, response, next) => {
   addUser(request.body)
@@ -13,4 +18,22 @@ exports.getUsers = (request, response, next) => {
   fetchUsers(searchTerm).then((users) => {
     response.status(200).send({ users });
   });
+};
+
+exports.patchUser = (request, response, next) => {
+  const { user_id } = request.params;
+  updateUser(user_id, request.body)
+    .then((patchInfo) => {
+      response.status(200).send(patchInfo);
+    })
+    .catch(next);
+};
+
+exports.deleteUser = (request, response, next) => {
+  const { user_id } = request.params;
+  removeUser(user_id)
+    .then(() => {
+      response.status(204).send({});
+    })
+    .catch(next);
 };

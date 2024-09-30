@@ -245,5 +245,18 @@
         "image_url": "imgurl"
       }
     }
+  },
+  "PATCH /api/users/:user_id": {
+    "description": "patches display_name and or email and or avatar_url of a user",
+    "requestFormat": {
+      "display_name": "Lian",
+      "email": "newemail@gmail.com",
+      "avatar_url": "newImg.jpeg"
+    },
+    "exampleResponse": {
+      "display_name": "Lian",
+      "email": "newemail@gmail.com",
+      "avatar_url": "newImg.jpeg"
+    }
   }
 }

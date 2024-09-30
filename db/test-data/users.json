@@ -3,7 +3,7 @@
     "id": "user-0",
     "email": "exam3ple@email.com",
     "display_name": "LianTattersall",
-    "avatar_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUm0sQ0gEhk4Mm4lmgyv7nyWNMV6tBD7X4tg&s",
+    "avatar_url": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
     "recipies": [
       { "recipie_id": "recipie-3", "recipie_name": "American Pnacakes" }
     ],
@@ -17,7 +17,7 @@
     "id": "user-1",
     "email": "exam2ple@email.com",
     "display_name": "Lian468",
-    "avatar_url": "https://lian-li.com/wp-content/uploads/2023/05/p28-00.jpg",
+    "avatar_url": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
     "recipies": [{ "recipie_id": "recipie-1", "recipie_name": "crepes" }],
     "favourites": [1234, 4567],
     "lists": [
@@ -29,7 +29,7 @@
     "id": "user-2",
     "email": "exam5ple@email.com",
     "display_name": "Hanna",
-    "avatar_url": "https://static.tvtropes.org/pmwiki/pub/images/hanna_amazon_prime_video_134784.jpg",
+    "avatar_url": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
     "recipies": [],
     "favourites": [],
     "lists": [
@@ -41,7 +41,7 @@
     "id": "user-3",
     "email": "exam7ple@email.com",
     "display_name": "HannaBremnerTattersall",
-    "avatar_url": "https://i.redd.it/why-are-greyhounds-so-weird-and-so-cute-v0-ch7j73h0vtwa1.jpg?width=3024&format=pjpg&auto=webp&s=f99106f2c20b3479ecf4df7013b6ead3f30da135",
+    "avatar_url": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
     "recipies": [
       { "recipie_id": "recipie-4", "recipie_name": "Chicken nuggets" },
       { "recipie_id": "recipie-2", "recipie_name": "bubble tea" }

@@ -523,6 +523,24 @@ describe("/api/users/:user_id/calendar", () => {
         });
     });
   });
+  describe("DELETE", () => {
+    test("204 - empty response body upon successful deletion", () => {
+      return request(app)
+        .delete("/api/users/user-0/calendar")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/users/user404040/calendar")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+  });
 });
 
 describe("/api/users/:user_id/lists", () => {
@@ -1366,6 +1384,79 @@ describe("/recipies", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+});
+
+describe("/users/:user_id", () => {
+  describe("PATCH", () => {
+    test("200 - responds with the patched values", () => {
+      return request(app)
+        .patch("/api/users/user-0")
+        .send({ avatar_url: "/user_images/IMG_136.jpeg" })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual({ avatar_url: "/user_images/IMG_136.jpeg" });
+        });
+    });
+    test("200 - multiple patch values", () => {
+      const patchInfo = {
+        display_name: "Leanne",
+        email: "leanne468@gmail.com",
+        avatar_url: "/user_images/IMG_875",
+      };
+      return request(app)
+        .patch("/api/users/user-0")
+        .send(patchInfo)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual(patchInfo);
+        });
+    });
+    test("400 - responds with an error when the data type is not a string", () => {
+      return request(app)
+        .patch("/api/users/user-0")
+        .send({ display_name: 2366, email: "example@gmail.com" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid data type");
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .patch("/api/users/user200000")
+        .send({ display_name: "elen" })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+    test("400 - responds with an error when there are invalid keys", () => {
+      return request(app)
+        .patch("/api/users/user-0")
+        .send({ display_name: "Lian", age: "23" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 - Invalid format for request body");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("204 - empty response body upon successful deletion of a user", () => {
+      return request(app)
+        .delete("/api/users/user-0")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .delete("/api/users/user10358")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
         });
     });
   });

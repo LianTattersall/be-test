@@ -4,6 +4,7 @@ const {
   setDoc,
   getDoc,
   getDocs,
+  deleteDoc,
 } = require("firebase/firestore");
 const db = require("../db/connection");
 const MiniSearch = require("minisearch");
@@ -96,5 +97,41 @@ exports.fetchUsers = (searchTerm) => {
       return filteredUsers.slice(0, 10);
     }
     return users.slice(0, 10);
+  });
+};
+
+exports.updateUser = (user_id, patchInfo) => {
+  const patchKeys = Object.keys(patchInfo);
+  const greenList = ["display_name", "email", "avatar_url"];
+  if (!patchKeys.every((key) => greenList.indexOf(key) >= 0)) {
+    return Promise.reject({
+      status: 400,
+      message: "400 - Invalid format for request body",
+    });
+  }
+
+  if (!patchKeys.every((key) => typeof patchInfo[key] === "string")) {
+    return Promise.reject({ status: 400, message: "400 - Invalid data type" });
+  }
+  const docRef = doc(usersRef, user_id);
+  return getDoc(docRef)
+    .then((snapShot) => {
+      if (!snapShot.exists()) {
+        return Promise.reject({ status: 404, message: "404 - User not found" });
+      }
+      return setDoc(docRef, patchInfo, { merge: true });
+    })
+    .then(() => {
+      return patchInfo;
+    });
+};
+
+exports.removeUser = (user_id) => {
+  const docRef = doc(usersRef, user_id);
+  return getDoc(docRef).then((snapShot) => {
+    if (!snapShot.exists()) {
+      return Promise.reject({ status: 404, message: "404 - User not found" });
+    }
+    return deleteDoc(docRef);
   });
 };

@@ -1,4 +1,10 @@
-const { collection, getDoc, doc, setDoc } = require("firebase/firestore");
+const {
+  collection,
+  getDoc,
+  doc,
+  setDoc,
+  deleteDoc,
+} = require("firebase/firestore");
 const db = require("../db/connection");
 
 const calendarRef = collection(db, "calendar");
@@ -169,6 +175,16 @@ exports.removeMealForUserByDate = (user_id, date, meal) => {
     }
     delete meals[meal];
     return setDoc(docRef, data);
+  });
+};
+
+exports.removeUsersCalendar = (user_id) => {
+  const docRef = doc(calendarRef, user_id);
+  return getDoc(docRef).then((snapShot) => {
+    if (!snapShot.exists()) {
+      return Promise.reject({ status: 404, message: "404 - User not found" });
+    }
+    return deleteDoc(docRef);
   });
 };
 
