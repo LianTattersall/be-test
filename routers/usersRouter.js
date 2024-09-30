@@ -21,6 +21,7 @@ const {
   getUsers,
   patchUser,
   deleteUser,
+  getUserById,
 } = require("../controllers/users-controllers");
 
 const usersRouter = require("express").Router();
@@ -56,5 +57,7 @@ usersRouter.patch("/:user_id", patchUser);
 usersRouter.delete("/:user_id", deleteUser);
 
 usersRouter.delete("/:user_id/calendar", delteUsersCalendar);
+
+usersRouter.get("/:user_id", getUserById);
 
 module.exports = usersRouter;

@@ -135,3 +135,14 @@ exports.removeUser = (user_id) => {
     return deleteDoc(docRef);
   });
 };
+
+exports.fetchUserById = (user_id) => {
+  const docRef = doc(usersRef, user_id);
+  return getDoc(docRef).then((snapShot) => {
+    if (!snapShot.exists()) {
+      return Promise.reject({ status: 404, message: "404 - User not found" });
+    }
+    const { display_name, avatar_url, email } = snapShot.data();
+    return { display_name, avatar_url, email };
+  });
+};

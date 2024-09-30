@@ -1460,4 +1460,27 @@ describe("/users/:user_id", () => {
         });
     });
   });
+  describe("GET", () => {
+    test("200 - responds with user details", () => {
+      return request(app)
+        .get("/api/users/user-0")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(user).toEqual({
+            email: "exam3ple@email.com",
+            display_name: "LianTattersall",
+            avatar_url:
+              "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
+          });
+        });
+    });
+    test("404 - responds with an error when the user does not exist", () => {
+      return request(app)
+        .get("/api/users/user-100293")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 - User not found");
+        });
+    });
+  });
 });
